@@ -8,6 +8,7 @@ from motor.motor_asyncio import AsyncIOMotorClient
 MONGODB_CONNECTION_STRING= os.environ["MONGODB_CONNECTION_STRING"]
 
 
+
 client = AsyncIOMotorClient(MONGODB_CONNECTION_STRING, uuidRepresentation="standard")
 db = client.todolist
 todos = db.todos
