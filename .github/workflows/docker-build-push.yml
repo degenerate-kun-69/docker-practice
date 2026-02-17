@@ -4,11 +4,9 @@ on:
   push:
     branches:
       - main
-      - master
   pull_request:
     branches:
       - main
-      - master
   workflow_dispatch:
 
 jobs:
@@ -28,7 +26,7 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      # Use dynamic tagging with git SHA for versioning
+      # Use dynamic tagging with auto-incrementing version
       - name: Build and push backend image
         uses: docker/build-push-action@v5
         with:
@@ -37,10 +35,10 @@ jobs:
           target: runner
           push: ${{ github.event_name != 'pull_request' }}  # Only push on main/master
           tags: |
-            docker.io/degen05kun/practice-webapp:backend_1.0
+            docker.io/degen05kun/practice-webapp:backend_1.0.${{ github.run_number }}
             docker.io/degen05kun/practice-webapp:backend_${{ github.sha }}
             docker.io/degen05kun/practice-webapp:backend_latest
-          cache-from: type=registry,ref=docker.io/degen05kun/practice-webapp:backend_1.0
+          cache-from: type=registry,ref=docker.io/degen05kun/practice-webapp:backend_latest
           cache-to: type=inline
 
       - name: Build and push frontend image
@@ -50,8 +48,8 @@ jobs:
           file: ./frontend/Dockerfile
           push: ${{ github.event_name != 'pull_request' }}  # Only push on main/master
           tags: |
-            docker.io/degen05kun/practice-webapp:frontend_1.0
+            docker.io/degen05kun/practice-webapp:frontend_1.0.${{ github.run_number }}
             docker.io/degen05kun/practice-webapp:frontend_${{ github.sha }}
             docker.io/degen05kun/practice-webapp:frontend_latest
-          cache-from: type=registry,ref=docker.io/degen05kun/practice-webapp:frontend_1.0
+          cache-from: type=registry,ref=docker.io/degen05kun/practice-webapp:frontend_latest
           cache-to: type=inline
