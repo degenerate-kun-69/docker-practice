@@ -1,6 +1,6 @@
 services:
   backend:
-    image: mysite-backend
+    image: docker.io/degen05kun/practice-webapp:backend_1.0
     pull_policy: never
     container_name: mysite-backend
     build:
@@ -16,7 +16,7 @@ services:
       - mongodb
   
   frontend:
-    image: mysite-frontend
+    image: docker.io/degen05kun/practice-webapp:frontend_1.0
     pull_policy: never
     container_name: mysite-frontend
     build:
