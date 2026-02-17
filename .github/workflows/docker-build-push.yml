@@ -28,14 +28,18 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      # Use dynamic tagging with git SHA for versioning
       - name: Build and push backend image
         uses: docker/build-push-action@v5
         with:
           context: ./backend
           file: ./backend/Dockerfile
           target: runner
-          push: true
-          tags: docker.io/degen05kun/practice-webapp:backend_1.0
+          push: ${{ github.event_name != 'pull_request' }}  # Only push on main/master
+          tags: |
+            docker.io/degen05kun/practice-webapp:backend_1.0
+            docker.io/degen05kun/practice-webapp:backend_${{ github.sha }}
+            docker.io/degen05kun/practice-webapp:backend_latest
           cache-from: type=registry,ref=docker.io/degen05kun/practice-webapp:backend_1.0
           cache-to: type=inline
 
@@ -44,7 +48,10 @@ jobs:
         with:
           context: ./frontend
           file: ./frontend/Dockerfile
-          push: true
-          tags: docker.io/degen05kun/practice-webapp:frontend_1.0
+          push: ${{ github.event_name != 'pull_request' }}  # Only push on main/master
+          tags: |
+            docker.io/degen05kun/practice-webapp:frontend_1.0
+            docker.io/degen05kun/practice-webapp:frontend_${{ github.sha }}
+            docker.io/degen05kun/practice-webapp:frontend_latest
           cache-from: type=registry,ref=docker.io/degen05kun/practice-webapp:frontend_1.0
           cache-to: type=inline
