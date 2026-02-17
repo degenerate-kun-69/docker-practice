@@ -4,14 +4,19 @@ on:
   push:
     branches:
       - main
+      - test
   pull_request:
     branches:
       - main
+      - test
   workflow_dispatch:
 
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
     
     steps:
       - name: Checkout code
@@ -26,6 +31,13 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
       # Use dynamic tagging with auto-incrementing version
       - name: Build and push backend image
         uses: docker/build-push-action@v5
@@ -38,6 +50,9 @@ jobs:
             docker.io/degen05kun/practice-webapp:backend_1.0.${{ github.run_number }}
             docker.io/degen05kun/practice-webapp:backend_${{ github.sha }}
             docker.io/degen05kun/practice-webapp:backend_latest
+            ghcr.io/degenerate-kun-69/docker-practice:backend_1.0.${{ github.run_number }}
+            ghcr.io/degenerate-kun-69/docker-practice:backend_${{ github.sha }}
+            ghcr.io/degenerate-kun-69/docker-practice:backend_latest
           cache-from: type=registry,ref=docker.io/degen05kun/practice-webapp:backend_latest
           cache-to: type=inline
 
@@ -51,5 +66,8 @@ jobs:
             docker.io/degen05kun/practice-webapp:frontend_1.0.${{ github.run_number }}
             docker.io/degen05kun/practice-webapp:frontend_${{ github.sha }}
             docker.io/degen05kun/practice-webapp:frontend_latest
+            ghcr.io/degenerate-kun-69/docker-practice:frontend_1.0.${{ github.run_number }}
+            ghcr.io/degenerate-kun-69/docker-practice:frontend_${{ github.sha }}
+            ghcr.io/degenerate-kun-69/docker-practice:frontend_latest
           cache-from: type=registry,ref=docker.io/degen05kun/practice-webapp:frontend_latest
           cache-to: type=inline
